@@ -1,0 +1,196 @@
+# EDA.ipynb
+
+"""
+Exploratory Data Analysis (EDA) Notebook
+
+This notebook serves as a comprehensive exploratory data analysis of our dataset.
+The goal of this EDA is to understand the underlying patterns, relationships,
+and characteristics of the data, identify potential issues such as missing values
+or outliers, and prepare the groundwork for subsequent modeling or analysis.
+
+Outline of Steps:
+1.  Load the Dataset: Import necessary libraries and load the data into a pandas DataFrame.
+2.  Initial Data Inspection:
+    * Display the first few rows of the DataFrame.
+    * Check data types and non-null values using .info().
+    * Examine descriptive statistics for numerical columns using .describe().
+3.  Missing Values Analysis:
+    * Identify and quantify missing values.
+    * Visualize missing data patterns.
+4.  Univariate Analysis:
+    * Analyze the distribution of individual numerical features (histograms, box plots).
+    * Examine the frequency distribution of categorical features (count plots).
+5.  Bivariate Analysis:
+    * Explore relationships between pairs of variables (scatter plots for numerical-numerical,
+        box plots/violin plots for numerical-categorical, heatmaps for categorical-categorical).
+6.  Correlation Analysis:
+    * Calculate and visualize the correlation matrix for numerical features.
+7.  Outlier Detection:
+    * Identify potential outliers using box plots or other statistical methods.
+8.  Data Cleaning and Preprocessing Notes (Conceptual):
+    * Summarize any initial thoughts on how to handle missing values, outliers, or feature engineering based on the EDA.
+"""
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# --- 1. Load the Dataset ---
+# For demonstration, we'll use a simple dummy dataset.
+# In a real scenario, you would load your actual data, e.g., pd.read_csv('your_data.csv')
+print("--- Step 1: Loading Dataset ---")
+data = {
+    'CustomerID': range(1, 101),
+    'Age': np.random.randint(18, 65, 100),
+    'Gender': np.random.choice(['Male', 'Female'], 100),
+    'AnnualIncome': np.random.randint(30000, 120000, 100),
+    'SpendingScore': np.random.randint(1, 100, 100),
+    'ProductCategory': np.random.choice(['Electronics', 'Clothing', 'Home Goods', 'Food'], 100),
+    'PurchaseDate': pd.to_datetime('2023-01-01') + pd.to_timedelta(np.random.randint(0, 365, 100), unit='D')
+}
+df = pd.DataFrame(data)
+
+# Introduce some missing values for demonstration
+for col in ['Age', 'AnnualIncome']:
+    df.loc[np.random.choice(df.index, 5, replace=False), col] = np.nan
+df.loc[np.random.choice(df.index, 3, replace=False), 'Gender'] = np.nan
+
+print("Dataset loaded successfully. Displaying first 5 rows:")
+print(df.head())
+print("-" * 50)
+
+
+# --- 2. Initial Data Inspection ---
+print("--- Step 2: Initial Data Inspection ---")
+print("\nDataFrame Info:")
+df.info()
+
+print("\nDescriptive Statistics for Numerical Columns:")
+print(df.describe())
+
+print("\nValue Counts for Categorical Columns:")
+for col in ['Gender', 'ProductCategory']:
+    print(f"\n{col}:")
+    print(df[col].value_counts())
+print("-" * 50)
+
+
+# --- 3. Missing Values Analysis ---
+print("--- Step 3: Missing Values Analysis ---")
+print("\nMissing Values Count per Column:")
+print(df.isnull().sum())
+
+print("\nPercentage of Missing Values per Column:")
+print((df.isnull().sum() / len(df)) * 100)
+
+# Visualize missing values (using seaborn heatmap)
+plt.figure(figsize=(10, 6))
+sns.heatmap(df.isnull(), cbar=False, cmap='viridis')
+plt.title('Missing Values Heatmap')
+plt.show()
+print("-" * 50)
+
+
+# --- 4. Univariate Analysis ---
+print("--- Step 4: Univariate Analysis ---")
+# Histograms for numerical columns
+numerical_cols = ['Age', 'AnnualIncome', 'SpendingScore']
+plt.figure(figsize=(15, 5))
+for i, col in enumerate(numerical_cols):
+    plt.subplot(1, len(numerical_cols), i + 1)
+    sns.histplot(df[col].dropna(), kde=True) # dropna to handle NaNs for plotting
+    plt.title(f'Distribution of {col}')
+plt.tight_layout()
+plt.show()
+
+# Box plots for numerical columns to check for outliers
+plt.figure(figsize=(15, 5))
+for i, col in enumerate(numerical_cols):
+    plt.subplot(1, len(numerical_cols), i + 1)
+    sns.boxplot(y=df[col].dropna())
+    plt.title(f'Box Plot of {col}')
+plt.tight_layout()
+plt.show()
+
+# Count plots for categorical columns
+categorical_cols = ['Gender', 'ProductCategory']
+plt.figure(figsize=(12, 5))
+for i, col in enumerate(categorical_cols):
+    plt.subplot(1, len(categorical_cols), i + 1)
+    sns.countplot(x=df[col].dropna())
+    plt.title(f'Count of {col}')
+plt.tight_layout()
+plt.show()
+print("-" * 50)
+
+
+# --- 5. Bivariate Analysis ---
+print("--- Step 5: Bivariate Analysis ---")
+# Numerical vs Numerical (Scatter plot)
+plt.figure(figsize=(8, 6))
+sns.scatterplot(x='AnnualIncome', y='SpendingScore', data=df)
+plt.title('Annual Income vs Spending Score')
+plt.show()
+
+# Numerical vs Categorical (Box plot)
+plt.figure(figsize=(12, 6))
+sns.boxplot(x='ProductCategory', y='AnnualIncome', data=df)
+plt.title('Annual Income by Product Category')
+plt.show()
+
+plt.figure(figsize=(8, 6))
+sns.violinplot(x='Gender', y='SpendingScore', data=df)
+plt.title('Spending Score by Gender')
+plt.show()
+print("-" * 50)
+
+
+# --- 6. Correlation Analysis ---
+print("--- Step 6: Correlation Analysis ---")
+# Select only numerical columns for correlation matrix
+correlation_matrix = df[numerical_cols].corr()
+print("\nCorrelation Matrix:")
+print(correlation_matrix)
+
+plt.figure(figsize=(8, 6))
+sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt=".2f")
+plt.title('Correlation Matrix of Numerical Features')
+plt.show()
+print("-" * 50)
+
+
+# --- 7. Outlier Detection ---
+print("--- Step 7: Outlier Detection ---")
+# Outliers were visually checked in step 4 using box plots.
+# For a more formal approach, you could use IQR method or Z-score.
+# Example: Identifying outliers in 'AnnualIncome' using IQR
+Q1 = df['AnnualIncome'].quantile(0.25)
+Q3 = df['AnnualIncome'].quantile(0.75)
+IQR = Q3 - Q1
+lower_bound = Q1 - 1.5 * IQR
+upper_bound = Q3 + 1.5 * IQR
+
+outliers_income = df[(df['AnnualIncome'] < lower_bound) | (df['AnnualIncome'] > upper_bound)]
+print(f"\nPotential Outliers in AnnualIncome (using IQR):")
+if not outliers_income.empty:
+    print(outliers_income[['CustomerID', 'AnnualIncome']])
+else:
+    print("No significant outliers detected in AnnualIncome based on IQR.")
+print("-" * 50)
+
+
+# --- 8. Data Cleaning and Preprocessing Notes (Conceptual) ---
+print("--- Step 8: Data Cleaning and Preprocessing Notes ---")
+print("\nBased on this EDA, here are some conceptual notes for data cleaning and preprocessing:")
+print(" - Missing values in 'Age', 'AnnualIncome', and 'Gender' need to be addressed. "
+      "Strategies could include imputation (mean/median for numerical, mode for categorical) or removal of rows/columns.")
+print(" - Outliers in numerical features like 'AnnualIncome' and 'SpendingScore' should be further investigated. "
+      "They might be legitimate extreme values or data entry errors. Depending on their nature, "
+      "they might need capping, transformation, or removal.")
+print(" - 'PurchaseDate' column is currently an object; it has been converted to datetime type. "
+      "Further feature engineering could extract year, month, day of week, or time since last purchase.")
+print(" - Categorical features like 'Gender' and 'ProductCategory' will need encoding (e.g., One-Hot Encoding) "
+      "for most machine learning models.")
+print("\nEDA Complete. Further steps involve data preprocessing and model building.")
+print("-" * 50)
