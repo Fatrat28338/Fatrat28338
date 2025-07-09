@@ -1,8 +1,0 @@
-cd path/to/Fatrat28338/Fatrat28338
-mkdir -p Notebooks
-# Paste the JSON into Notebooks/EDA.ipynb using your text editor.
-
-git add Notebooks/EDA.ipynb
-git commit -m "Add EDA.ipynb notebook to Notebooks directory"
-
-git push origin main
