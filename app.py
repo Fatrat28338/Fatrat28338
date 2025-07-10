@@ -53,7 +53,7 @@ existing_hover_cols = [col for col in hover_cols if col in vehicles_df_display.c
 fig_scatter_price_odometer = px.scatter(vehicles_df_display, x="odometer", y="price", title='Price vs Odometer Reading', hover_data=existing_hover_cols, color='year' if 'year' in vehicles_df_display.columns else None, labels={'odometer': 'Odometer (miles)', 'price': 'Price'})
 st.plotly_chart(fig_scatter_price_odometer, use_container_width=True)
 
-st,subheader("Price vs Manufacturing Year")
+st.subheader("Price vs Manufacturing Year")
 st.write("Analyze how car prices vary with their manufacturing year.")
 
 if 'condition' in vehicles_df_cleaned.columns:
