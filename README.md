@@ -2,7 +2,7 @@
 - 👀 I’m interested in learning everything that data science a has to offer me.
 - 🌱 I’m currently learning ...
 - 💞️ I’m looking to collaborate on ...
-- 📫 How to reach me by my email. robertalston89@icloud.com
+- 📫 How to reach me by my email robertalston89@icloud.com
 
 - Explanation of my project: Explanation and How it Addresses Requirements:
 
